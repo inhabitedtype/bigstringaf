@@ -8,6 +8,8 @@ Bigstrings and other string-like types.
 
 So here they are. Go crazy.
 
+[![Build Status](https://travis-ci.org/inhabitedtype/bigstringaf.svg?branch=master)](https://travis-ci.org/inhabitedtype/bigstringaf)
+
 ## Installation
 
 Install the library and its dependencies via [OPAM][opam]:
