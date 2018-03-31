@@ -1,0 +1,13 @@
+(jbuild_version 1)
+
+(executables
+ ((libraries (alcotest bigstringaf))
+  (modules   (test_bigstringaf s))
+  (names     (test_bigstringaf))))
+
+(alias
+ ((name    runtest)
+  (package bigstringaf)
+  (deps    (test_bigstringaf.exe))
+  (action  (run ${<}))))
+

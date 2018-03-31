@@ -1,0 +1,14 @@
+(jbuild_version 1)
+
+(library
+ ((name        bigstringaf)
+  (public_name bigstringaf)
+  (libraries   (bigarray))
+  (c_names (bigstringaf_stubs))
+  (c_flags (-Wall -Wextra -Wpedantic))
+  (ocamlopt_flags (:standard -S))
+  (flags   (:standard -safe-string))
+  (js_of_ocaml (
+    (javascript_files (runtime.js))
+    ))
+  ))
