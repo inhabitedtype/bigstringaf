@@ -31,23 +31,31 @@ external unsafe_blit_from_string : string -> src_off:int -> t       -> dst_off:i
 let sub t ~off ~len =
   BA1.sub t off len
 
-let copy src ~off ~len =
-  if off < 0                then assert false;
-  if off + len > length src then assert false;
+let[@inline never] invalid_bounds op buffer_len off len =
+  let message =
+    Printf.sprintf "Bigstringaf.%s invalid range: { buffer_len: %d, off: %d, len: %d }"
+    op buffer_len off len
+  in
+  raise (Invalid_argument message)
+;;
+
+let copy t ~off ~len =
+  let buffer_len = length t in
+  if off < 0 || off + len > buffer_len then invalid_bounds "copy" buffer_len off len;
   let dst = create len in
-  unsafe_blit src ~src_off:off dst ~dst_off:0 ~len;
+  unsafe_blit t ~src_off:off dst ~dst_off:0 ~len;
   dst
 
 let substring t ~off ~len =
-  if off < 0              then assert false;
-  if off + len > length t then assert false;
+  let buffer_len = length t in
+  if off < 0 || off + len > buffer_len then invalid_bounds "substring" buffer_len off len;
   let b = Bytes.create len in
   unsafe_blit_to_bytes t ~src_off:off b ~dst_off:0 ~len;
   Bytes.unsafe_to_string b
 
 let of_string ~off ~len s =
-  if off < 0                     then assert false;
-  if off + len > String.length s then assert false;
+  let buffer_len = String.length s in
+  if off < 0 || off + len > buffer_len then invalid_bounds "of_string" buffer_len off len;
   let b = create len in
   unsafe_blit_from_string s ~src_off:off b ~dst_off:0 ~len;
   b
