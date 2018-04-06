@@ -28,6 +28,12 @@ external unsafe_blit_from_bytes : Bytes.t -> src_off:int -> t       -> dst_off:i
 external unsafe_blit_from_string : string -> src_off:int -> t       -> dst_off:int -> len:int -> unit =
   "bigstringaf_blit_from_bytes"   [@@noalloc]
 
+external unsafe_memcmp : t -> int -> t -> int -> int -> int =
+  "bigstringaf_memcmp_bigstring" [@@noalloc]
+
+external unsafe_memcmp_string : t -> int -> string -> int -> int -> int =
+  "bigstringaf_memcmp_string" [@@noalloc]
+
 let sub t ~off ~len =
   BA1.sub t off len
 
