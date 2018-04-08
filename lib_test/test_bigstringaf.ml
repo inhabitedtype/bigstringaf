@@ -143,9 +143,10 @@ let unsafe_operations =
   [ "getters"            , `Quick, getters (module Getters)
   ; "setters"            , `Quick, setters (module Setters) ]
 
+let string1 = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+let string2 = "abcdefghijklmnopqrstuvwxyz"
+
 let unsafe_blit () =
-  let string1 = "ABCDEFGHIJKLMNOPQRSTUVWXYZ" in
-  let string2 = "abcdefghijklmnopqrstuvwxyz" in
   let with_buffers ~f =
     let buffer1 = Bigstringaf.of_string string1 ~off:0 ~len:(String.length string1) in
     let buffer2 = Bigstringaf.of_string string2 ~off:0 ~len:(String.length string2) in
@@ -178,8 +179,6 @@ let unsafe_blit () =
 ;;
 
 let unsafe_blit_to_bytes   () =
-  let string1 = "ABCDEFGHIJKLMNOPQRSTUVWXYZ" in
-  let string2 = "abcdefghijklmnopqrstuvwxyz" in
   let with_buffers ~f =
     let buffer1 = string1 in
     let buffer2 = Bigstringaf.of_string string2 ~off:0 ~len:(String.length string2) in
@@ -202,8 +201,6 @@ let unsafe_blit_to_bytes   () =
 ;;
 
 let unsafe_blit_from_bytes () =
-  let string1 = "ABCDEFGHIJKLMNOPQRSTUVWXYZ" in
-  let string2 = "abcdefghijklmnopqrstuvwxyz" in
   let with_buffers ~f =
     let buffer1 = Bytes.of_string string1 in
     let buffer2 = Bigstringaf.of_string string2 ~off:0 ~len:(String.length string2) in
@@ -231,8 +228,43 @@ let blit_operations =
   ; "unsafe_blit_from_bytes", `Quick, unsafe_blit_from_bytes
   ]
 
+let unsafe_memcmp () =
+  let buffer1 = Bigstringaf.of_string ~off:0 ~len:(String.length string1) string1 in
+  let buffer2 = Bigstringaf.of_string ~off:0 ~len:(String.length string2) string2 in
+  Alcotest.(check bool "identical buffers are equal" true
+    (Bigstringaf.unsafe_memcmp buffer1 0 buffer1 0 (Bigstringaf.length buffer1) = 0));
+  Alcotest.(check bool "prefix of identical buffers are equal" true
+    (Bigstringaf.unsafe_memcmp buffer1 0 buffer1 0 (Bigstringaf.length buffer1 - 10 ) = 0));
+  Alcotest.(check bool "suffix of identical buffers are equal" true
+    (Bigstringaf.unsafe_memcmp buffer1 10 buffer1 10 (Bigstringaf.length buffer1 - 10) = 0));
+  Alcotest.(check bool "uppercase is less than uppercase" true
+    (Bigstringaf.unsafe_memcmp buffer1 0 buffer2 0 (Bigstringaf.length buffer1) < 0));
+  Alcotest.(check bool "lowercase is greater than uppercase" true
+    (Bigstringaf.unsafe_memcmp buffer2 0 buffer1 0 (Bigstringaf.length buffer1) > 0));
+;;
+
+let unsafe_memcmp_string () =
+  let buffer1 = Bigstringaf.of_string ~off:0 ~len:(String.length string1) string1 in
+  let buffer2 = Bigstringaf.of_string ~off:0 ~len:(String.length string2) string2 in
+  Alcotest.(check bool "of_string'd and original buffer are equal" true
+    (Bigstringaf.unsafe_memcmp_string buffer1 0 string1 0 (Bigstringaf.length buffer1) = 0));
+  Alcotest.(check bool "prefix of of_string'd and original buffer are equal" true
+    (Bigstringaf.unsafe_memcmp_string buffer1 10 string1 10 (Bigstringaf.length buffer1 - 10) = 0));
+  Alcotest.(check bool "suffix of identical buffers are equal" true
+    (Bigstringaf.unsafe_memcmp_string buffer1 10 string1 10 (Bigstringaf.length buffer1 - 10) = 0));
+  Alcotest.(check bool "uppercase is less than uppercase" true
+    (Bigstringaf.unsafe_memcmp_string buffer1 0 string2 0 (Bigstringaf.length buffer1) < 0));
+  Alcotest.(check bool "lowercase is greater than uppercase" true
+    (Bigstringaf.unsafe_memcmp_string buffer2 0 string1 0 (Bigstringaf.length buffer1) > 0));
+  ()
+
+let memcmp_operations =
+  [ "unsafe_memcmp"       , `Quick, unsafe_memcmp
+  ; "unsafe_memcmp_string", `Quick, unsafe_memcmp_string ]
+
 let () =
   Alcotest.run "test suite"
     [ "safe operations"  , safe_operations
     ; "unsafe operations", unsafe_operations
-    ; "blit operations"  , blit_operations ]
+    ; "blit operations"  , blit_operations
+    ; "memcmp operations", memcmp_operations ]

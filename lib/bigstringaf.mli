@@ -221,3 +221,15 @@ val unsafe_blit_from_string : string  -> src_off:int -> t -> dst_off:int -> len:
 val unsafe_blit_from_bytes  : Bytes.t -> src_off:int -> t -> dst_off:int -> len:int -> unit
 
 val unsafe_blit_to_bytes : t -> src_off:int -> Bytes.t -> dst_off:int -> len:int -> unit
+
+(** {3 [memcmp]}
+
+    Fast comparisions based on [memcmp]. Simliar to the blits, these are not
+    memory safe and are implemented by the same C call:
+
+      {[
+        memcmp(buf1 + off1, buf2 + off2, len);
+      ]} *)
+
+val unsafe_memcmp        : t -> int -> t      -> int -> int -> int
+val unsafe_memcmp_string : t -> int -> string -> int -> int -> int
