@@ -1,3 +1,12 @@
+let of_string () =
+  let open Bigstringaf in
+  let exn = Invalid_argument "Bigstringaf.of_string invalid range: { buffer_len: 3, off: 4611686018427387903, len: 2 }" in
+  Alcotest.check_raises "safe overflow" exn (fun () -> ignore (of_string ~off:max_int ~len:2 "abc"))
+;;
+
+let constructors =
+  [ "of_string", `Quick, of_string ]
+
 let index_out_of_bounds () =
   let open Bigstringaf in
   let exn    = Invalid_argument "index out of bounds" in
@@ -264,7 +273,8 @@ let memcmp_operations =
 
 let () =
   Alcotest.run "test suite"
-    [ "safe operations"  , safe_operations
+    [ "constructors"     , constructors
+    ; "safe operations"  , safe_operations
     ; "unsafe operations", unsafe_operations
     ; "blit operations"  , blit_operations
     ; "memcmp operations", memcmp_operations ]
