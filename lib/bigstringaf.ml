@@ -45,23 +45,45 @@ let[@inline never] invalid_bounds op buffer_len off len =
   raise (Invalid_argument message)
 ;;
 
+(* A note on bounds checking.
+ *
+ * The code should perform the following check to ensure that the blit doesn't
+ * run off the end of the input buffer:
+ *
+ *   {[off + len <= buffer_len]}
+ *
+ * However, this may lead to an interger overflow for large values of [off],
+ * e.g., [max_int], which will cause the comparison to return [true] when it
+ * should really return [false].
+ *
+ * An equivalent comparison that does not run into this integer overflow
+ * problem is:
+ *
+ *   {[buffer_len - off => len]}
+ *
+ * This is checking that the input buffer, less the offset, is sufficiently
+ * long to perform the blit. Since the expression is subtracting [off] rather
+ * than adding it, it doesn't suffer from the overflow that the previous
+ * inequality did. As long as there is check to ensure that [off] is not
+ * negative, it won't underflow either. *)
+
 let copy t ~off ~len =
   let buffer_len = length t in
-  if off < 0 || off + len > buffer_len then invalid_bounds "copy" buffer_len off len;
+  if off < 0 || buffer_len - off < len then invalid_bounds "copy" buffer_len off len;
   let dst = create len in
   unsafe_blit t ~src_off:off dst ~dst_off:0 ~len;
   dst
 
 let substring t ~off ~len =
   let buffer_len = length t in
-  if off < 0 || off + len > buffer_len then invalid_bounds "substring" buffer_len off len;
+  if off < 0 || buffer_len - off < len then invalid_bounds "substring" buffer_len off len;
   let b = Bytes.create len in
   unsafe_blit_to_bytes t ~src_off:off b ~dst_off:0 ~len;
   Bytes.unsafe_to_string b
 
 let of_string ~off ~len s =
   let buffer_len = String.length s in
-  if off < 0 || off + len > buffer_len then invalid_bounds "of_string" buffer_len off len;
+  if off < 0 || buffer_len - off < len then invalid_bounds "of_string" buffer_len off len;
   let b = create len in
   unsafe_blit_from_string s ~src_off:off b ~dst_off:0 ~len;
   b
