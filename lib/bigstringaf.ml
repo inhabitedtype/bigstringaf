@@ -45,6 +45,14 @@ let[@inline never] invalid_bounds op buffer_len off len =
   raise (Invalid_argument message)
 ;;
 
+let[@inline never] invalid_bounds_blit op src_len src_off dst_len dst_off len =
+  let message =
+    Printf.sprintf "Bigstringaf.%s invalid range: { src_len: %d, src_off: %d, dst_len: %d, dst_off: %d, len: %d }"
+    op src_len src_off dst_len dst_off len
+  in
+  raise (Invalid_argument message)
+;;
+
 (* A note on bounds checking.
  *
  * The code should perform the following check to ensure that the blit doesn't
@@ -73,6 +81,7 @@ let copy t ~off ~len =
   let dst = create len in
   unsafe_blit t ~src_off:off dst ~dst_off:0 ~len;
   dst
+;;
 
 let substring t ~off ~len =
   let buffer_len = length t in
@@ -80,6 +89,7 @@ let substring t ~off ~len =
   let b = Bytes.create len in
   unsafe_blit_to_bytes t ~src_off:off b ~dst_off:0 ~len;
   Bytes.unsafe_to_string b
+;;
 
 let of_string ~off ~len s =
   let buffer_len = String.length s in
@@ -87,6 +97,47 @@ let of_string ~off ~len s =
   let b = create len in
   unsafe_blit_from_string s ~src_off:off b ~dst_off:0 ~len;
   b
+;;
+
+let blit src ~src_off dst ~dst_off ~len =
+  let src_len = length src in
+  let dst_len = length dst in
+  if src_off < 0 || src_len - src_off < len
+  then invalid_bounds_blit "blit" src_len src_off dst_len dst_off len;
+  if dst_off < 0 || dst_len - dst_off < len
+  then invalid_bounds_blit "blit" src_len src_off dst_len dst_off len;
+  unsafe_blit src ~src_off dst ~dst_off ~len
+;;
+
+let blit_from_string src ~src_off dst ~dst_off ~len =
+  let src_len = String.length src in
+  let dst_len = length dst in
+  if src_off < 0 || src_len - src_off < len
+  then invalid_bounds_blit "blit_from_string" src_len src_off dst_len dst_off len;
+  if dst_off < 0 || dst_len - dst_off < len
+  then invalid_bounds_blit "blit_from_string" src_len src_off dst_len dst_off len;
+  unsafe_blit_from_string src ~src_off dst ~dst_off ~len
+;;
+
+let blit_from_bytes src ~src_off dst ~dst_off ~len =
+  let src_len = Bytes.length src in
+  let dst_len = length dst in
+  if src_off < 0 || src_len - src_off < len
+  then invalid_bounds_blit "blit_from_bytes" src_len src_off dst_len dst_off len;
+  if dst_off < 0 || dst_len - dst_off < len
+  then invalid_bounds_blit "blit_from_bytes" src_len src_off dst_len dst_off len;
+  unsafe_blit_from_bytes src ~src_off dst ~dst_off ~len
+;;
+
+let blit_to_bytes src ~src_off dst ~dst_off ~len =
+  let src_len = length src in
+  let dst_len = Bytes.length dst in
+  if src_off < 0 || src_len - src_off < len
+  then invalid_bounds_blit "blit_to_bytes" src_len src_off dst_len dst_off len;
+  if dst_off < 0 || dst_len - dst_off < len
+  then invalid_bounds_blit "blit_to_bytes" src_len src_off dst_len dst_off len;
+  unsafe_blit_to_bytes src ~src_off dst ~dst_off ~len
+;;
 
 (* Safe operations *)
 

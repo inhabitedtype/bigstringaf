@@ -31,7 +31,7 @@ val copy : t -> off:int -> len:int -> t
 
 val sub : t -> off:int -> len:int -> t
 (** [sub t ~off ~len] does not allocate a bigstring, but instead returns a new
-    view into [t] starting at [off], and with length [len]. 
+    view into [t] starting at [off], and with length [len].
 
     {b Note} that this does not allocate a new buffer, but instead shares the
     buffer of [t] with the newly-returned bigstring. *)
@@ -112,7 +112,7 @@ val get_int16_sign_extended_be : t -> int -> int
     word size before returning the result. *)
 
 val set_int16_be : t -> int -> int -> unit
-(** [set_int16_be t i v] sets the eight bytes in [t] starting at offset [off] to 
+(** [set_int16_be t i v] sets the eight bytes in [t] starting at offset [off] to
     the value [v]. *)
 
 val get_int32_be : t -> int -> int32
@@ -130,9 +130,29 @@ val set_int64_be : t -> int -> int64 -> unit
 (** [set_int64_be t i v] sets the eight bytes in [t] starting at offset [i] to
     the value [v]. *)
 
+(** {3 Blits}
+
+    All the following blit operations do the same thing. They copy a given
+    number of bytes from a source starting at some offset to a destination
+    starting at some other offset. Forgetting for a moment that OCaml is a
+    memory-safe language, these are all equivalent to:
+
+      {[
+        memcpy(dst + dst_off, src + src_off, len);
+      ]}
+
+    And in fact, that's how they're implemented. Except that bounds checking
+    performed before performing the blit. *)
+
+val blit             : t       -> src_off:int -> t -> dst_off:int -> len:int -> unit
+val blit_from_string : string  -> src_off:int -> t -> dst_off:int -> len:int -> unit
+val blit_from_bytes  : Bytes.t -> src_off:int -> t -> dst_off:int -> len:int -> unit
+
+val blit_to_bytes : t -> src_off:int -> Bytes.t -> dst_off:int -> len:int -> unit
+
 
 (** {2 Memory-unsafe Operations}
- 
+
     The following operations are not memory safe. However, they do compile down
     to just a couple instructions. Make sure when using them to perform your
     own bounds checking. Or don't. Just make sure you know what you're doing.
@@ -140,7 +160,7 @@ val set_int64_be : t -> int -> int64 -> unit
 
 external unsafe_get : t -> int -> char         = "%caml_ba_unsafe_ref_1"
 (** [unsafe_get t i] is like {!get} except no bounds checking is performed. *)
-  
+
 external unsafe_set : t -> int -> char -> unit = "%caml_ba_unsafe_set_1"
 (** [unsafe_set t i c] is like {!set} except no bounds checking is performed. *)
 
@@ -206,8 +226,8 @@ val unsafe_set_int64_be : t -> int -> int64 -> unit
     All the following blit operations do the same thing. They copy a given
     number of bytes from a source starting at some offset to a destination
     starting at some other offset. Forgetting for a moment that OCaml is a
-    memory-safe language, these are all equivalent to: 
-      
+    memory-safe language, these are all equivalent to:
+
       {[
         memcpy(dst + dst_off, src + src_off, len);
       ]}
