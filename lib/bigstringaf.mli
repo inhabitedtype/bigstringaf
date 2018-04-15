@@ -150,6 +150,18 @@ val blit_from_bytes  : Bytes.t -> src_off:int -> t -> dst_off:int -> len:int -> 
 
 val blit_to_bytes : t -> src_off:int -> Bytes.t -> dst_off:int -> len:int -> unit
 
+(** {3 [memcmp]}
+
+    Fast comparisions based on [memcmp]. Simliar to the blits, these are
+    implemented as C calls after performing bounds checks.
+
+      {[
+        memcmp(buf1 + off1, buf2 + off2, len);
+      ]} *)
+
+val memcmp        : t -> int -> t      -> int -> int -> int
+val memcmp_string : t -> int -> string -> int -> int -> int
+
 
 (** {2 Memory-unsafe Operations}
 

@@ -53,6 +53,14 @@ let[@inline never] invalid_bounds_blit op src_len src_off dst_len dst_off len =
   raise (Invalid_argument message)
 ;;
 
+let[@inline never] invalid_bounds_memcmp op buf1_len buf1_off buf2_len buf2_off len =
+  let message =
+    Printf.sprintf "Bigstringaf.%s invalid range: { buf1_len: %d, buf1_off: %d, buf2_len: %d, buf2_off: %d, len: %d }"
+    op buf1_len buf1_off buf2_len buf2_off len
+  in
+  raise (Invalid_argument message)
+;;
+
 (* A note on bounds checking.
  *
  * The code should perform the following check to ensure that the blit doesn't
@@ -138,6 +146,27 @@ let blit_to_bytes src ~src_off dst ~dst_off ~len =
   then invalid_bounds_blit "blit_to_bytes" src_len src_off dst_len dst_off len;
   unsafe_blit_to_bytes src ~src_off dst ~dst_off ~len
 ;;
+
+let memcmp buf1 buf1_off buf2 buf2_off len =
+  let buf1_len = length buf1 in
+  let buf2_len = length buf2 in
+  if buf1_off < 0 || buf1_len - buf1_off < len
+  then invalid_bounds_memcmp "memcmp" buf1_len buf1_off buf2_len buf2_off len;
+  if buf2_off < 0 || buf2_len - buf2_off < len
+  then invalid_bounds_memcmp "memcmp" buf1_len buf1_off buf2_len buf2_off len;
+  unsafe_memcmp buf1 buf1_off buf2 buf2_off len
+;;
+
+let memcmp_string buf1 buf1_off buf2 buf2_off len =
+  let buf1_len = length buf1 in
+  let buf2_len = String.length buf2 in
+  if buf1_off < 0 || buf1_len - buf1_off < len
+  then invalid_bounds_memcmp "memcmp" buf1_len buf1_off buf2_len buf2_off len;
+  if buf2_off < 0 || buf2_len - buf2_off < len
+  then invalid_bounds_memcmp "memcmp" buf1_len buf1_off buf2_len buf2_off len;
+  unsafe_memcmp_string buf1 buf1_off buf2 buf2_off len
+;;
+
 
 (* Safe operations *)
 
