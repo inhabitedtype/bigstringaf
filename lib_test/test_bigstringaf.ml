@@ -54,7 +54,7 @@ let getters m () =
   Alcotest.(check int64 "get_int64_le" 0x0df0ad8befbeaddeL (get_int64_le buffer 0));
 ;;
 
-let setters m () = 
+let setters m () =
   let module Setters = (val m : S.Setters) in
   let open Setters in
   let string = Bytes.make 16 '_' |> Bytes.unsafe_to_string in
@@ -113,12 +113,141 @@ let setters m () =
     Alcotest.(check string "set_int64_le" "\x0d\xf0\xad\x8b\xef\xbe\xad\xde" (substring ~len:8 buffer)));
 ;;
 
-let safe_operations = 
+let string1 = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+let string2 = "abcdefghijklmnopqrstuvwxyz"
+
+let blit m () =
+  let module Blit = (val m : S.Blit) in
+  let open Blit in
+  let with_buffers ~f =
+    let buffer1 = Bigstringaf.of_string string1 ~off:0 ~len:(String.length string1) in
+    let buffer2 = Bigstringaf.of_string string2 ~off:0 ~len:(String.length string2) in
+    f buffer1 buffer2
+  in
+  with_buffers ~f:(fun buf1 buf2 ->
+    blit buf1 ~src_off:0 buf2 ~dst_off:0 ~len:0;
+    let new_string2 = Bigstringaf.substring buf2 ~off:0 ~len:(Bigstringaf.length buf2) in
+    Alcotest.(check string "empty blit" string2 new_string2));
+
+  with_buffers ~f:(fun buf1 buf2 ->
+    blit buf1 ~src_off:0 buf2 ~dst_off:0 ~len:(Bigstringaf.length buf2);
+    let new_string2 = Bigstringaf.substring buf2 ~off:0 ~len:(Bigstringaf.length buf2) in
+    Alcotest.(check string "full blit to another buffer" string1 new_string2));
+
+  with_buffers ~f:(fun buf1 _buf2 ->
+    blit buf1 ~src_off:0 buf1 ~dst_off:0 ~len:(Bigstringaf.length buf1);
+    let new_string1 = Bigstringaf.substring buf1 ~off:0 ~len:(Bigstringaf.length buf1) in
+    Alcotest.(check string "entirely overlapping blit (unchanged)" string1 new_string1));
+
+  with_buffers ~f:(fun buf1 buf2 ->
+    blit buf1 ~src_off:0 buf2 ~dst_off:4 ~len:8;
+    let new_string2 = Bigstringaf.substring buf2 ~off:0 ~len:(Bigstringaf.length buf2) in
+    Alcotest.(check string "partial blit to another buffer" "abcdABCDEFGHmnopqrstuvwxyz" new_string2));
+
+  with_buffers ~f:(fun buf1 _buf2 ->
+    blit buf1 ~src_off:0 buf1 ~dst_off:4 ~len:8;
+    let new_string1 = Bigstringaf.substring buf1 ~off:0 ~len:(Bigstringaf.length buf1) in
+    Alcotest.(check string "partially overlapping" "ABCDABCDEFGHMNOPQRSTUVWXYZ" new_string1));
+;;
+
+let blit_to_bytes m () =
+  let module Blit = (val m : S.Blit) in
+  let open Blit in
+  let with_buffers ~f =
+    let buffer1 = string1 in
+    let buffer2 = Bigstringaf.of_string string2 ~off:0 ~len:(String.length string2) in
+    f buffer1 buffer2
+  in
+  with_buffers ~f:(fun buf1 buf2 ->
+    blit_from_string buf1 ~src_off:0 buf2 ~dst_off:0 ~len:0;
+    let new_string2 = Bigstringaf.substring buf2 ~off:0 ~len:(Bigstringaf.length buf2) in
+    Alcotest.(check string "empty blit" string2 new_string2));
+
+  with_buffers ~f:(fun buf1 buf2 ->
+    blit_from_string buf1 ~src_off:0 buf2 ~dst_off:0 ~len:(Bigstringaf.length buf2);
+    let new_string2 = Bigstringaf.substring buf2 ~off:0 ~len:(Bigstringaf.length buf2) in
+    Alcotest.(check string "full blit to another buffer" string1 new_string2));
+
+  with_buffers ~f:(fun buf1 buf2 ->
+    blit_from_string buf1 ~src_off:0 buf2 ~dst_off:4 ~len:8;
+    let new_string2 = Bigstringaf.substring buf2 ~off:0 ~len:(Bigstringaf.length buf2) in
+    Alcotest.(check string "partial blit to another buffer" "abcdABCDEFGHmnopqrstuvwxyz" new_string2));
+;;
+
+let blit_from_bytes m () =
+  let module Blit = (val m : S.Blit) in
+  let open Blit in
+  let with_buffers ~f =
+    let buffer1 = Bytes.of_string string1 in
+    let buffer2 = Bigstringaf.of_string string2 ~off:0 ~len:(String.length string2) in
+    f buffer1 buffer2
+  in
+  with_buffers ~f:(fun buf1 buf2 ->
+    blit_from_bytes buf1 ~src_off:0 buf2 ~dst_off:0 ~len:0;
+    let new_string2 = Bigstringaf.substring buf2 ~off:0 ~len:(Bigstringaf.length buf2) in
+    Alcotest.(check string "empty blit" string2 new_string2));
+
+  with_buffers ~f:(fun buf1 buf2 ->
+    blit_from_bytes buf1 ~src_off:0 buf2 ~dst_off:0 ~len:(Bigstringaf.length buf2);
+    let new_string2 = Bigstringaf.substring buf2 ~off:0 ~len:(Bigstringaf.length buf2) in
+    Alcotest.(check string "full blit to another buffer" string1 new_string2));
+
+  with_buffers ~f:(fun buf1 buf2 ->
+    blit_from_bytes buf1 ~src_off:0 buf2 ~dst_off:4 ~len:8;
+    let new_string2 = Bigstringaf.substring buf2 ~off:0 ~len:(Bigstringaf.length buf2) in
+    Alcotest.(check string "partial blit to another buffer" "abcdABCDEFGHmnopqrstuvwxyz" new_string2));
+;;
+
+let memcmp m () =
+  let module Memcmp = (val m : S.Memcmp) in
+  let open Memcmp in
+  let buffer1 = Bigstringaf.of_string ~off:0 ~len:(String.length string1) string1 in
+  let buffer2 = Bigstringaf.of_string ~off:0 ~len:(String.length string2) string2 in
+  Alcotest.(check bool "identical buffers are equal" true
+    (memcmp buffer1 0 buffer1 0 (Bigstringaf.length buffer1) = 0));
+  Alcotest.(check bool "prefix of identical buffers are equal" true
+    (memcmp buffer1 0 buffer1 0 (Bigstringaf.length buffer1 - 10 ) = 0));
+  Alcotest.(check bool "suffix of identical buffers are equal" true
+    (memcmp buffer1 10 buffer1 10 (Bigstringaf.length buffer1 - 10) = 0));
+  Alcotest.(check bool "uppercase is less than uppercase" true
+    (memcmp buffer1 0 buffer2 0 (Bigstringaf.length buffer1) < 0));
+  Alcotest.(check bool "lowercase is greater than uppercase" true
+    (memcmp buffer2 0 buffer1 0 (Bigstringaf.length buffer1) > 0));
+;;
+
+let memcmp_string m () =
+  let module Memcmp = (val m : S.Memcmp) in
+  let open Memcmp in
+  let buffer1 = Bigstringaf.of_string ~off:0 ~len:(String.length string1) string1 in
+  let buffer2 = Bigstringaf.of_string ~off:0 ~len:(String.length string2) string2 in
+  Alcotest.(check bool "of_string'd and original buffer are equal" true
+    (memcmp_string buffer1 0 string1 0 (Bigstringaf.length buffer1) = 0));
+  Alcotest.(check bool "prefix of of_string'd and original buffer are equal" true
+    (memcmp_string buffer1 10 string1 10 (Bigstringaf.length buffer1 - 10) = 0));
+  Alcotest.(check bool "suffix of identical buffers are equal" true
+    (memcmp_string buffer1 10 string1 10 (Bigstringaf.length buffer1 - 10) = 0));
+  Alcotest.(check bool "uppercase is less than uppercase" true
+    (memcmp_string buffer1 0 string2 0 (Bigstringaf.length buffer1) < 0));
+  Alcotest.(check bool "lowercase is greater than uppercase" true
+    (memcmp_string buffer2 0 string1 0 (Bigstringaf.length buffer1) > 0));
+  ()
+;;
+
+
+let safe_operations =
   let module Getters : S.Getters = Bigstringaf in
   let module Setters : S.Setters = Bigstringaf in
+  let module Blit    : S.Blit    = Bigstringaf in
+  let module Memcmp  : S.Memcmp  = Bigstringaf in
   [ "index out of bounds", `Quick, index_out_of_bounds
-  ; "getters"            , `Quick, getters (module Getters)
-  ; "setters"            , `Quick, setters (module Setters) ]
+  ; "getters"            , `Quick, getters         (module Getters)
+  ; "setters"            , `Quick, setters         (module Setters)
+  ; "blit"               , `Quick, blit            (module Blit)
+  ; "blit_to_bytes"      , `Quick, blit_to_bytes   (module Blit)
+  ; "blit_from_bytes"    , `Quick, blit_from_bytes (module Blit)
+  ; "memcmp"             , `Quick, memcmp          (module Memcmp)
+  ; "memcmp_string"      , `Quick, memcmp_string   (module Memcmp)
+  ]
 
 let unsafe_operations = 
   let module Getters : S.Getters = struct
@@ -149,132 +278,32 @@ let unsafe_operations =
     let set_int32_be = unsafe_set_int32_be 
     let set_int64_be = unsafe_set_int64_be 
   end in
-  [ "getters"            , `Quick, getters (module Getters)
-  ; "setters"            , `Quick, setters (module Setters) ]
+  let module Blit : S.Blit = struct
+    open Bigstringaf
 
-let string1 = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
-let string2 = "abcdefghijklmnopqrstuvwxyz"
+    let blit = unsafe_blit
+    let blit_from_string = unsafe_blit_from_string
+    let blit_from_bytes = unsafe_blit_from_bytes
 
-let unsafe_blit () =
-  let with_buffers ~f =
-    let buffer1 = Bigstringaf.of_string string1 ~off:0 ~len:(String.length string1) in
-    let buffer2 = Bigstringaf.of_string string2 ~off:0 ~len:(String.length string2) in
-    f buffer1 buffer2
-  in
-  with_buffers ~f:(fun buf1 buf2 ->
-    Bigstringaf.unsafe_blit buf1 ~src_off:0 buf2 ~dst_off:0 ~len:0;
-    let new_string2 = Bigstringaf.substring buf2 ~off:0 ~len:(Bigstringaf.length buf2) in
-    Alcotest.(check string "empty blit" string2 new_string2));
+    let blit_to_bytes = unsafe_blit_to_bytes
+  end in
+  let module Memcmp : S.Memcmp = struct
+    open Bigstringaf
 
-  with_buffers ~f:(fun buf1 buf2 ->
-    Bigstringaf.unsafe_blit buf1 ~src_off:0 buf2 ~dst_off:0 ~len:(Bigstringaf.length buf2);
-    let new_string2 = Bigstringaf.substring buf2 ~off:0 ~len:(Bigstringaf.length buf2) in
-    Alcotest.(check string "full blit to another buffer" string1 new_string2));
-
-  with_buffers ~f:(fun buf1 _buf2 ->
-    Bigstringaf.unsafe_blit buf1 ~src_off:0 buf1 ~dst_off:0 ~len:(Bigstringaf.length buf1);
-    let new_string1 = Bigstringaf.substring buf1 ~off:0 ~len:(Bigstringaf.length buf1) in
-    Alcotest.(check string "entirely overlapping blit (unchanged)" string1 new_string1));
-
-  with_buffers ~f:(fun buf1 buf2 ->
-    Bigstringaf.unsafe_blit buf1 ~src_off:0 buf2 ~dst_off:4 ~len:8;
-    let new_string2 = Bigstringaf.substring buf2 ~off:0 ~len:(Bigstringaf.length buf2) in
-    Alcotest.(check string "partial blit to another buffer" "abcdABCDEFGHmnopqrstuvwxyz" new_string2));
-
-  with_buffers ~f:(fun buf1 _buf2 ->
-    Bigstringaf.unsafe_blit buf1 ~src_off:0 buf1 ~dst_off:4 ~len:8;
-    let new_string1 = Bigstringaf.substring buf1 ~off:0 ~len:(Bigstringaf.length buf1) in
-    Alcotest.(check string "partially overlapping" "ABCDABCDEFGHMNOPQRSTUVWXYZ" new_string1));
-;;
-
-let unsafe_blit_to_bytes   () =
-  let with_buffers ~f =
-    let buffer1 = string1 in
-    let buffer2 = Bigstringaf.of_string string2 ~off:0 ~len:(String.length string2) in
-    f buffer1 buffer2
-  in
-  with_buffers ~f:(fun buf1 buf2 ->
-    Bigstringaf.unsafe_blit_from_string buf1 ~src_off:0 buf2 ~dst_off:0 ~len:0;
-    let new_string2 = Bigstringaf.substring buf2 ~off:0 ~len:(Bigstringaf.length buf2) in
-    Alcotest.(check string "empty blit" string2 new_string2));
-
-  with_buffers ~f:(fun buf1 buf2 ->
-    Bigstringaf.unsafe_blit_from_string buf1 ~src_off:0 buf2 ~dst_off:0 ~len:(Bigstringaf.length buf2);
-    let new_string2 = Bigstringaf.substring buf2 ~off:0 ~len:(Bigstringaf.length buf2) in
-    Alcotest.(check string "full blit to another buffer" string1 new_string2));
-
-  with_buffers ~f:(fun buf1 buf2 ->
-    Bigstringaf.unsafe_blit_from_string buf1 ~src_off:0 buf2 ~dst_off:4 ~len:8;
-    let new_string2 = Bigstringaf.substring buf2 ~off:0 ~len:(Bigstringaf.length buf2) in
-    Alcotest.(check string "partial blit to another buffer" "abcdABCDEFGHmnopqrstuvwxyz" new_string2));
-;;
-
-let unsafe_blit_from_bytes () =
-  let with_buffers ~f =
-    let buffer1 = Bytes.of_string string1 in
-    let buffer2 = Bigstringaf.of_string string2 ~off:0 ~len:(String.length string2) in
-    f buffer1 buffer2
-  in
-  with_buffers ~f:(fun buf1 buf2 ->
-    Bigstringaf.unsafe_blit_from_bytes buf1 ~src_off:0 buf2 ~dst_off:0 ~len:0;
-    let new_string2 = Bigstringaf.substring buf2 ~off:0 ~len:(Bigstringaf.length buf2) in
-    Alcotest.(check string "empty blit" string2 new_string2));
-
-  with_buffers ~f:(fun buf1 buf2 ->
-    Bigstringaf.unsafe_blit_from_bytes buf1 ~src_off:0 buf2 ~dst_off:0 ~len:(Bigstringaf.length buf2);
-    let new_string2 = Bigstringaf.substring buf2 ~off:0 ~len:(Bigstringaf.length buf2) in
-    Alcotest.(check string "full blit to another buffer" string1 new_string2));
-
-  with_buffers ~f:(fun buf1 buf2 ->
-    Bigstringaf.unsafe_blit_from_bytes buf1 ~src_off:0 buf2 ~dst_off:4 ~len:8;
-    let new_string2 = Bigstringaf.substring buf2 ~off:0 ~len:(Bigstringaf.length buf2) in
-    Alcotest.(check string "partial blit to another buffer" "abcdABCDEFGHmnopqrstuvwxyz" new_string2));
-;;
-
-let blit_operations = 
-  [ "unsafe_blit"           , `Quick, unsafe_blit
-  ; "unsafe_blit_to_bytes"  , `Quick, unsafe_blit_to_bytes
-  ; "unsafe_blit_from_bytes", `Quick, unsafe_blit_from_bytes
+    let memcmp = unsafe_memcmp
+    let memcmp_string = unsafe_memcmp_string
+  end in
+  [ "getters"        , `Quick, getters         (module Getters)
+  ; "setters"        , `Quick, setters         (module Setters)
+  ; "blit"           , `Quick, blit            (module Blit)
+  ; "blit_to_bytes"  , `Quick, blit_to_bytes   (module Blit)
+  ; "blit_from_bytes", `Quick, blit_from_bytes (module Blit)
+  ; "memcmp"         , `Quick, memcmp          (module Memcmp)
+  ; "memcmp_string"  , `Quick, memcmp_string   (module Memcmp)
   ]
-
-let unsafe_memcmp () =
-  let buffer1 = Bigstringaf.of_string ~off:0 ~len:(String.length string1) string1 in
-  let buffer2 = Bigstringaf.of_string ~off:0 ~len:(String.length string2) string2 in
-  Alcotest.(check bool "identical buffers are equal" true
-    (Bigstringaf.unsafe_memcmp buffer1 0 buffer1 0 (Bigstringaf.length buffer1) = 0));
-  Alcotest.(check bool "prefix of identical buffers are equal" true
-    (Bigstringaf.unsafe_memcmp buffer1 0 buffer1 0 (Bigstringaf.length buffer1 - 10 ) = 0));
-  Alcotest.(check bool "suffix of identical buffers are equal" true
-    (Bigstringaf.unsafe_memcmp buffer1 10 buffer1 10 (Bigstringaf.length buffer1 - 10) = 0));
-  Alcotest.(check bool "uppercase is less than uppercase" true
-    (Bigstringaf.unsafe_memcmp buffer1 0 buffer2 0 (Bigstringaf.length buffer1) < 0));
-  Alcotest.(check bool "lowercase is greater than uppercase" true
-    (Bigstringaf.unsafe_memcmp buffer2 0 buffer1 0 (Bigstringaf.length buffer1) > 0));
-;;
-
-let unsafe_memcmp_string () =
-  let buffer1 = Bigstringaf.of_string ~off:0 ~len:(String.length string1) string1 in
-  let buffer2 = Bigstringaf.of_string ~off:0 ~len:(String.length string2) string2 in
-  Alcotest.(check bool "of_string'd and original buffer are equal" true
-    (Bigstringaf.unsafe_memcmp_string buffer1 0 string1 0 (Bigstringaf.length buffer1) = 0));
-  Alcotest.(check bool "prefix of of_string'd and original buffer are equal" true
-    (Bigstringaf.unsafe_memcmp_string buffer1 10 string1 10 (Bigstringaf.length buffer1 - 10) = 0));
-  Alcotest.(check bool "suffix of identical buffers are equal" true
-    (Bigstringaf.unsafe_memcmp_string buffer1 10 string1 10 (Bigstringaf.length buffer1 - 10) = 0));
-  Alcotest.(check bool "uppercase is less than uppercase" true
-    (Bigstringaf.unsafe_memcmp_string buffer1 0 string2 0 (Bigstringaf.length buffer1) < 0));
-  Alcotest.(check bool "lowercase is greater than uppercase" true
-    (Bigstringaf.unsafe_memcmp_string buffer2 0 string1 0 (Bigstringaf.length buffer1) > 0));
-  ()
-
-let memcmp_operations =
-  [ "unsafe_memcmp"       , `Quick, unsafe_memcmp
-  ; "unsafe_memcmp_string", `Quick, unsafe_memcmp_string ]
 
 let () =
   Alcotest.run "test suite"
     [ "constructors"     , constructors
     ; "safe operations"  , safe_operations
-    ; "unsafe operations", unsafe_operations
-    ; "blit operations"  , blit_operations
-    ; "memcmp operations", memcmp_operations ]
+    ; "unsafe operations", unsafe_operations ]
