@@ -11,3 +11,13 @@
     (javascript_files (runtime.js))
     ))
   ))
+
+(rule (copy# bigstringaf_stubs.c bigstringaf_stubs_xen.c))
+
+(rule
+ (with-stdout-to cflags-xen.sexp
+  (progn
+   (echo "(")
+   (run pkg-config pkg-config --static mirage-xen --cflags)
+   (echo ")")
+   )))

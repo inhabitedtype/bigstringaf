@@ -17,4 +17,7 @@ depends: [
   "alcotest" {test}
   "base-bigarray"
 ]
+depopts: [
+  "mirage-xen-ocaml"
+]
 available: [ ocaml-version >= "4.03.0" ]
