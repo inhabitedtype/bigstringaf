@@ -1,2 +1,0 @@
-xen_linkopts = "-lbigstringaf_stubs_xen"
-freestanding_linkopts = "-lbigstringaf_freestanding_stubs"

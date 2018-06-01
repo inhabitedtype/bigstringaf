@@ -1,0 +1,4 @@
+# JBUILDER_GEN
+
+xen_linkopts = "-l:xen/libbigstringaf_xen_stubs.a"
+freestanding_linkopts = "-l:freestanding/libbigstringaf_freestanding_stubs.a"
