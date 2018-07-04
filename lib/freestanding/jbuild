@@ -1,0 +1,18 @@
+(jbuild_version 1)
+
+(library
+ ((name        bigstringaf_freestanding)
+  (public_name bigstringaf.freestanding)
+  (optional)
+  (libraries   (bigarray mirage-solo5))
+  (c_names     (bigstringaf_stubs))
+  (c_flags     (:include cflags.sexp))))
+
+(rule (copy# ../bigstringaf_stubs.c bigstringaf_stubs.c))
+(rule (copy# ../bigstringaf.ml bigstringaf.ml))
+(rule (copy# ../bigstringaf.mli bigstringaf.mli))
+
+(rule
+ ((targets (cflags.sexp))
+  (deps    (cflags.sh))
+  (action  (bash "./${<} > ${@}"))))

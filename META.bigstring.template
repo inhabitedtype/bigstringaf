@@ -1,1 +1,0 @@
-xen_linkopts = "-lbigstringaf_stubs_xen"
