@@ -9,8 +9,6 @@
   (c_flags     (:include cflags.sexp))))
 
 (rule (copy# ../bigstringaf_stubs.c bigstringaf_stubs.c))
-(rule (copy# ../bigstringaf.ml bigstringaf.ml))
-(rule (copy# ../bigstringaf.mli bigstringaf.mli))
 
 (rule
  ((targets (cflags.sexp))
