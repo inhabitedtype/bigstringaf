@@ -4,7 +4,7 @@
  ((name        bigstringaf_xen)
   (public_name bigstringaf.xen)
   (optional)
-  (libraries   (bigarray mirage-xen))
+  (libraries   (bigarray mirage-xen-posix))
   (c_names     (bigstringaf_stubs))
   (c_flags     (:include cflags.sexp))))
 
