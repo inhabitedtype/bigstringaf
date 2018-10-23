@@ -1,4 +1,4 @@
-### 0.4.0 (2018-10-22)
+### 0.4.0 (2018-10-23)
 
 * unify usage of mirage-xen-posix package (#17 @hannesm)
 * fix typo in comment (#18 @tiensonqin)
