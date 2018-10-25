@@ -10,4 +10,4 @@
 
 (rule (copy# ../bigstringaf_stubs.c bigstringaf_stubs.c))
 
-(rule (with-stdout-to cflags.sexp (run cflags.sh)))
+(rule (with-stdout-to cflags.sexp (run ./cflags.sh)))
