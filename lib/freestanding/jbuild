@@ -4,7 +4,7 @@
  ((name        bigstringaf_freestanding)
   (public_name bigstringaf.freestanding)
   (optional)
-  (libraries   (bigarray mirage-solo5))
+  (libraries   (bigarray ocaml-freestanding))
   (c_names     (bigstringaf_stubs))
   (c_flags     (:include cflags.sexp))))
 
