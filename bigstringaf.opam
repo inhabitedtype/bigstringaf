@@ -20,6 +20,9 @@ depopts: [
   "mirage-xen-posix"
   "ocaml-freestanding"
 ]
+conflicts: [
+  "ocaml-freestanding" {< "0.4.1"}
+]
 synopsis: "Bigstring intrinsics and fast blits based on memcpy/memmove"
 description: """
 Bigstring intrinsics and fast blits based on memcpy/memmove

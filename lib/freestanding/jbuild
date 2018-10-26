@@ -4,10 +4,10 @@
  ((name        bigstringaf_freestanding)
   (public_name bigstringaf.freestanding)
   (optional)
-  (libraries   (bigarray mirage-solo5))
+  (libraries   (bigarray ocaml-freestanding))
   (c_names     (bigstringaf_stubs))
   (c_flags     (:include cflags.sexp))))
 
 (rule (copy# ../bigstringaf_stubs.c bigstringaf_stubs.c))
 
-(rule (with-stdout-to cflags.sexp (run cflags.sh)))
+(rule (with-stdout-to cflags.sexp (run ./cflags.sh)))

@@ -1,8 +1,9 @@
-### 0.4.0 (2018-10-23)
+### 0.4.0 (2018-10-26)
 
-* unify usage of mirage-xen-posix package (#17 @hannesm)
+* freestanding: fix dependencies (ocaml-freestanding #22 @hannesm)
+* xen: unify usage of mirage-xen-posix package (#17 @hannesm)
 * fix typo in comment (#18 @tiensonqin)
-* jbuild: do not use bash (#16 @rgrinberg)
+* jbuild: do not use bash (#16 #21 @rgrinberg, #22 @hannesm)
 * opam: add '"-p" name' to subst command (#15 @seliopou)
 
 ### 0.3.0 (2018-07-07)
