@@ -46,6 +46,9 @@ val substring : t -> off:int -> len:int -> string
 (** [substring t ~off ~len] returns a string of length [len] containing the
     bytes of [t] starting at [off]. *)
 
+val to_string : t -> string
+(** [to_string t] is equivalent to [substring t ~off:0 ~len:(length t)] *)
+
 external get : t -> int -> char = "%caml_ba_ref_1"
 (** [get t i] returns the charcter at offset [i] in [t]. *)
 
