@@ -99,6 +99,13 @@ let substring t ~off ~len =
   Bytes.unsafe_to_string b
 ;;
 
+let to_string t =
+  let len = length t in
+  let b = Bytes.create len in
+  unsafe_blit_to_bytes t ~src_off:0 b ~dst_off:0 ~len;
+  Bytes.unsafe_to_string b
+;;
+
 let of_string ~off ~len s =
   let buffer_len = String.length s in
   if off < 0 || buffer_len - off < len then invalid_bounds "of_string" buffer_len off len;
