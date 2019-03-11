@@ -63,7 +63,7 @@ let setters m () =
     f buffer
   in
   let substring ~len buffer = Bigstringaf.substring ~off:0 ~len buffer in
-  
+
   with_buffer ~f:(fun buffer ->
     set buffer 0 '\xde';
     Alcotest.(check string "set" "\xde___" (substring ~len:4 buffer)));
@@ -233,6 +233,60 @@ let memcmp_string m () =
   ()
 ;;
 
+let negative_bounds_check () =
+  let open Bigstringaf in
+  let buf = Bigstringaf.empty in
+  let exn_str fn =
+    Invalid_argument
+      (Printf.sprintf
+        "Bigstringaf.%s invalid range: { buffer_len: 0, off: 0, len: -8 }"
+        fn)
+  in
+  let exn_ba fn =
+    Invalid_argument
+      (Printf.sprintf
+        "Bigstringaf.%s invalid range: { src_len: 0, src_off: 0, dst_len: 0, dst_off: 4, len: -8 }"
+        fn)
+  in
+  let exn_cmp fn =
+    Invalid_argument
+      (Printf.sprintf
+        "Bigstringaf.%s invalid range: { buf1_len: 0, buf1_off: 0, buf2_len: 0, buf2_off: 0, len: -8 }"
+    fn)
+  in
+  Alcotest.check_raises "copy"
+    (exn_str "copy")
+    (fun () -> ignore (copy buf ~off:0 ~len:(-8)));
+  Alcotest.check_raises "substring"
+    (exn_str "substring")
+    (fun () -> ignore (substring buf ~off:0 ~len:(-8)));
+  Alcotest.check_raises "of_string"
+    (exn_str "of_string")
+    (fun () -> ignore (of_string "" ~off:0 ~len:(-8)));
+  Alcotest.check_raises "blit"
+    (exn_ba "blit")
+    (fun () -> ignore (blit buf ~src_off:0 buf ~dst_off:4 ~len:(-8)));
+  Alcotest.check_raises "blit_from_string"
+    (exn_ba "blit_from_string")
+    (fun () ->
+      ignore (blit_from_string "" ~src_off:0 buf ~dst_off:4 ~len:(-8)));
+  Alcotest.check_raises "blit_from_bytes"
+    (exn_ba "blit_from_bytes")
+    (fun () ->
+      ignore (blit_from_bytes (Bytes.of_string "") ~src_off:0 buf ~dst_off:4 ~len:(-8)));
+  Alcotest.check_raises "blit_to_bytes"
+    (exn_ba "blit_to_bytes")
+    (fun () ->
+      ignore (blit_to_bytes buf ~src_off:0 (Bytes.of_string "") ~dst_off:4 ~len:(-8)));
+  Alcotest.check_raises "memcmp"
+    (exn_cmp "memcmp")
+    (fun () ->
+      ignore (memcmp buf 0 buf 0 (-8)));
+  Alcotest.check_raises "memcmp_string"
+    (exn_cmp "memcmp_string")
+    (fun () ->
+      ignore (memcmp_string buf 0 "" 0 (-8)));
+;;
 
 let safe_operations =
   let module Getters : S.Getters = Bigstringaf in
@@ -247,36 +301,37 @@ let safe_operations =
   ; "blit_from_bytes"    , `Quick, blit_from_bytes (module Blit)
   ; "memcmp"             , `Quick, memcmp          (module Memcmp)
   ; "memcmp_string"      , `Quick, memcmp_string   (module Memcmp)
+  ; "negative length"    , `Quick, negative_bounds_check
   ]
 
-let unsafe_operations = 
+let unsafe_operations =
   let module Getters : S.Getters = struct
     open Bigstringaf
 
-    let get = unsafe_get 
+    let get = unsafe_get
 
-    let get_int16_le = unsafe_get_int16_le 
-    let get_int16_sign_extended_le = unsafe_get_int16_sign_extended_le 
-    let get_int32_le = unsafe_get_int32_le 
-    let get_int64_le = unsafe_get_int64_le 
+    let get_int16_le = unsafe_get_int16_le
+    let get_int16_sign_extended_le = unsafe_get_int16_sign_extended_le
+    let get_int32_le = unsafe_get_int32_le
+    let get_int64_le = unsafe_get_int64_le
 
-    let get_int16_be = unsafe_get_int16_be 
-    let get_int16_sign_extended_be = unsafe_get_int16_sign_extended_be 
-    let get_int32_be = unsafe_get_int32_be 
+    let get_int16_be = unsafe_get_int16_be
+    let get_int16_sign_extended_be = unsafe_get_int16_sign_extended_be
+    let get_int32_be = unsafe_get_int32_be
     let get_int64_be = unsafe_get_int64_be
   end in
   let module Setters : S.Setters = struct
     open Bigstringaf
 
-    let set = unsafe_set 
+    let set = unsafe_set
 
-    let set_int16_le = unsafe_set_int16_le 
-    let set_int32_le = unsafe_set_int32_le 
-    let set_int64_le = unsafe_set_int64_le 
+    let set_int16_le = unsafe_set_int16_le
+    let set_int32_le = unsafe_set_int32_le
+    let set_int64_le = unsafe_set_int64_le
 
-    let set_int16_be = unsafe_set_int16_be 
-    let set_int32_be = unsafe_set_int32_be 
-    let set_int64_be = unsafe_set_int64_be 
+    let set_int16_be = unsafe_set_int16_be
+    let set_int32_be = unsafe_set_int32_be
+    let set_int64_be = unsafe_set_int64_be
   end in
   let module Blit : S.Blit = struct
     open Bigstringaf
