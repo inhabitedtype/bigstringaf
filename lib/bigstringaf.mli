@@ -50,10 +50,10 @@ val to_string : t -> string
 (** [to_string t] is equivalent to [substring t ~off:0 ~len:(length t)] *)
 
 external get : t -> int -> char = "%caml_ba_ref_1"
-(** [get t i] returns the charcter at offset [i] in [t]. *)
+(** [get t i] returns the character at offset [i] in [t]. *)
 
 external set : t -> int -> char -> unit = "%caml_ba_set_1"
-(** [set t i c] sets the charcter at offset [i] in [t] to be [c] *)
+(** [set t i c] sets the character at offset [i] in [t] to be [c] *)
 
 (** {3 Little-endian Byte Order}
 
@@ -80,7 +80,7 @@ val set_int16_le : t -> int -> int -> unit
     the value [v]. *)
 
 val get_int32_le : t -> int -> int32
-(** [get_int16_le t i] returns the four bytes in [t] starting at offset [i]. *)
+(** [get_int32_le t i] returns the four bytes in [t] starting at offset [i]. *)
 
 val set_int32_le : t -> int -> int32 -> unit
 (** [set_int32_le t i v] sets the four bytes in [t] starting at offset [i] to
