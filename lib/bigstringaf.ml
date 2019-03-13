@@ -85,7 +85,8 @@ let[@inline never] invalid_bounds_memcmp op buf1_len buf1_off buf2_len buf2_off 
 
 let copy t ~off ~len =
   let buffer_len = length t in
-  if off < 0 || buffer_len - off < len then invalid_bounds "copy" buffer_len off len;
+  if len < 0 || off < 0 || buffer_len - off < len
+  then invalid_bounds "copy" buffer_len off len;
   let dst = create len in
   unsafe_blit t ~src_off:off dst ~dst_off:0 ~len;
   dst
@@ -93,7 +94,8 @@ let copy t ~off ~len =
 
 let substring t ~off ~len =
   let buffer_len = length t in
-  if off < 0 || buffer_len - off < len then invalid_bounds "substring" buffer_len off len;
+  if len < 0 || off < 0 || buffer_len - off < len
+  then invalid_bounds "substring" buffer_len off len;
   let b = Bytes.create len in
   unsafe_blit_to_bytes t ~src_off:off b ~dst_off:0 ~len;
   Bytes.unsafe_to_string b
@@ -108,7 +110,8 @@ let to_string t =
 
 let of_string ~off ~len s =
   let buffer_len = String.length s in
-  if off < 0 || buffer_len - off < len then invalid_bounds "of_string" buffer_len off len;
+  if len < 0 || off < 0 || buffer_len - off < len
+  then invalid_bounds "of_string" buffer_len off len;
   let b = create len in
   unsafe_blit_from_string s ~src_off:off b ~dst_off:0 ~len;
   b
@@ -117,6 +120,8 @@ let of_string ~off ~len s =
 let blit src ~src_off dst ~dst_off ~len =
   let src_len = length src in
   let dst_len = length dst in
+  if len < 0
+  then invalid_bounds_blit "blit" src_len src_off dst_len dst_off len;
   if src_off < 0 || src_len - src_off < len
   then invalid_bounds_blit "blit" src_len src_off dst_len dst_off len;
   if dst_off < 0 || dst_len - dst_off < len
@@ -127,6 +132,8 @@ let blit src ~src_off dst ~dst_off ~len =
 let blit_from_string src ~src_off dst ~dst_off ~len =
   let src_len = String.length src in
   let dst_len = length dst in
+  if len < 0
+  then invalid_bounds_blit "blit_from_string" src_len src_off dst_len dst_off len;
   if src_off < 0 || src_len - src_off < len
   then invalid_bounds_blit "blit_from_string" src_len src_off dst_len dst_off len;
   if dst_off < 0 || dst_len - dst_off < len
@@ -137,6 +144,8 @@ let blit_from_string src ~src_off dst ~dst_off ~len =
 let blit_from_bytes src ~src_off dst ~dst_off ~len =
   let src_len = Bytes.length src in
   let dst_len = length dst in
+  if len < 0
+  then invalid_bounds_blit "blit_from_bytes" src_len src_off dst_len dst_off len;
   if src_off < 0 || src_len - src_off < len
   then invalid_bounds_blit "blit_from_bytes" src_len src_off dst_len dst_off len;
   if dst_off < 0 || dst_len - dst_off < len
@@ -147,6 +156,8 @@ let blit_from_bytes src ~src_off dst ~dst_off ~len =
 let blit_to_bytes src ~src_off dst ~dst_off ~len =
   let src_len = length src in
   let dst_len = Bytes.length dst in
+  if len < 0
+  then invalid_bounds_blit "blit_to_bytes" src_len src_off dst_len dst_off len;
   if src_off < 0 || src_len - src_off < len
   then invalid_bounds_blit "blit_to_bytes" src_len src_off dst_len dst_off len;
   if dst_off < 0 || dst_len - dst_off < len
@@ -157,6 +168,8 @@ let blit_to_bytes src ~src_off dst ~dst_off ~len =
 let memcmp buf1 buf1_off buf2 buf2_off len =
   let buf1_len = length buf1 in
   let buf2_len = length buf2 in
+  if len < 0
+  then invalid_bounds_memcmp "memcmp" buf1_len buf1_off buf2_len buf2_off len;
   if buf1_off < 0 || buf1_len - buf1_off < len
   then invalid_bounds_memcmp "memcmp" buf1_len buf1_off buf2_len buf2_off len;
   if buf2_off < 0 || buf2_len - buf2_off < len
@@ -167,10 +180,12 @@ let memcmp buf1 buf1_off buf2 buf2_off len =
 let memcmp_string buf1 buf1_off buf2 buf2_off len =
   let buf1_len = length buf1 in
   let buf2_len = String.length buf2 in
+  if len < 0
+  then invalid_bounds_memcmp "memcmp_string" buf1_len buf1_off buf2_len buf2_off len;
   if buf1_off < 0 || buf1_len - buf1_off < len
-  then invalid_bounds_memcmp "memcmp" buf1_len buf1_off buf2_len buf2_off len;
+  then invalid_bounds_memcmp "memcmp_string" buf1_len buf1_off buf2_len buf2_off len;
   if buf2_off < 0 || buf2_len - buf2_off < len
-  then invalid_bounds_memcmp "memcmp" buf1_len buf1_off buf2_len buf2_off len;
+  then invalid_bounds_memcmp "memcmp_string" buf1_len buf1_off buf2_len buf2_off len;
   unsafe_memcmp_string buf1 buf1_off buf2 buf2_off len
 ;;
 
