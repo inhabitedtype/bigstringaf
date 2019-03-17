@@ -1,0 +1,10 @@
+(executables
+ (libraries alcotest bigstringaf)
+ (modules   test_bigstringaf s)
+ (names     test_bigstringaf))
+
+(alias
+ (name    runtest)
+ (package bigstringaf)
+ (deps    (:test test_bigstringaf.exe))
+ (action  (run %{test})))
