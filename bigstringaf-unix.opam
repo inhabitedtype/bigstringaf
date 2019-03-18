@@ -1,0 +1,22 @@
+opam-version: "2.0"
+maintainer: "Spiros Eliopoulos <spiros@inhabitedtype.com>"
+authors: [ "Spiros Eliopoulos <spiros@inhabitedtype.com>" ]
+license: "BSD-3-clause"
+homepage: "https://github.com/inhabitedtype/bigstringaf"
+bug-reports: "https://github.com/inhabitedtype/bigstringaf/issues"
+dev-repo: "git+https://github.com/inhabitedtype/bigstringaf.git"
+build: [
+  ["dune" "subst"] {pinned}
+  ["dune" "build" "-p" name "-j" jobs]
+  ["dune" "runtest" "-p" name] {with-test}
+]
+depends: [
+  "dune" {build}
+  "alcotest" {with-test}
+  "base-bigarray"
+  "ocaml" {>= "4.03.0"}
+]
+synopsis: "I/O for bigstrings"
+description: """
+I/O functions for bigstrings missing from the Unix module.
+"""
