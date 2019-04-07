@@ -68,7 +68,7 @@ let[@inline never] invalid_bounds_memcmp op buf1_len buf1_off buf2_len buf2_off 
  *
  *   {[off + len <= buffer_len]}
  *
- * However, this may lead to an interger overflow for large values of [off],
+ * However, this may lead to an integer overflow for large values of [off],
  * e.g., [max_int], which will cause the comparison to return [true] when it
  * should really return [false].
  *
@@ -80,7 +80,7 @@ let[@inline never] invalid_bounds_memcmp op buf1_len buf1_off buf2_len buf2_off 
  * This is checking that the input buffer, less the offset, is sufficiently
  * long to perform the blit. Since the expression is subtracting [off] rather
  * than adding it, it doesn't suffer from the overflow that the previous
- * inequality did. As long as there is check to ensure that [off] is not
+ * inequality did. As long as there is a check to ensure that [off] is not
  * negative, it won't underflow either. *)
 
 let copy t ~off ~len =
