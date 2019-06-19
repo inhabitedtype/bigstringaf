@@ -38,36 +38,36 @@
 void
 bigstringaf_blit_to_bytes(value vsrc, value vsrc_off, value vdst, value vdst_off, value vlen)
 {
-    void *src = ((char *)Caml_ba_data_val(vsrc)) + Long_val(vsrc_off),
-         *dst = ((char *)String_val(vdst))       + Long_val(vdst_off);
-    size_t len = Long_val(vlen);
+    void *src = ((char *)Caml_ba_data_val(vsrc)) + Unsigned_long_val(vsrc_off),
+         *dst = ((char *)String_val(vdst))       + Unsigned_long_val(vdst_off);
+    size_t len = Unsigned_long_val(vlen);
     memcpy(dst, src, len);
 }
 
 void
 bigstringaf_blit_to_bigstring(value vsrc, value vsrc_off, value vdst, value vdst_off, value vlen)
 {
-    void *src = ((char *)Caml_ba_data_val(vsrc)) + Long_val(vsrc_off),
-         *dst = ((char *)Caml_ba_data_val(vdst)) + Long_val(vdst_off);
-    size_t len = Long_val(vlen);
+    void *src = ((char *)Caml_ba_data_val(vsrc)) + Unsigned_long_val(vsrc_off),
+         *dst = ((char *)Caml_ba_data_val(vdst)) + Unsigned_long_val(vdst_off);
+    size_t len = Unsigned_long_val(vlen);
     memmove(dst, src, len);
 }
 
 void
 bigstringaf_blit_from_bytes(value vsrc, value vsrc_off, value vdst, value vdst_off, value vlen)
 {
-    void *src = ((char *)String_val(vsrc))       + Long_val(vsrc_off),
-         *dst = ((char *)Caml_ba_data_val(vdst)) + Long_val(vdst_off);
-    size_t len = Long_val(vlen);
+    void *src = ((char *)String_val(vsrc))       + Unsigned_long_val(vsrc_off),
+         *dst = ((char *)Caml_ba_data_val(vdst)) + Unsigned_long_val(vdst_off);
+    size_t len = Unsigned_long_val(vlen);
     memcpy(dst, src, len);
 }
 
 CAMLprim value
 bigstringaf_memcmp_bigstring(value vba1, value vba1_off, value vba2, value vba2_off, value vlen)
 {
-    void *ba1 = ((char *)Caml_ba_data_val(vba1)) + Long_val(vba1_off),
-         *ba2 = ((char *)Caml_ba_data_val(vba2)) + Long_val(vba2_off);
-    size_t len = Long_val(vlen);
+    void *ba1 = ((char *)Caml_ba_data_val(vba1)) + Unsigned_long_val(vba1_off),
+         *ba2 = ((char *)Caml_ba_data_val(vba2)) + Unsigned_long_val(vba2_off);
+    size_t len = Unsigned_long_val(vlen);
 
     int result = memcmp(ba1, ba2, len);
     return Val_int(result);
@@ -76,9 +76,9 @@ bigstringaf_memcmp_bigstring(value vba1, value vba1_off, value vba2, value vba2_
 CAMLprim value
 bigstringaf_memcmp_string(value vba, value vba_off, value vstr, value vstr_off, value vlen)
 {
-    void *buf1 = ((char *)Caml_ba_data_val(vba)) + Long_val(vba_off),
-         *buf2 = ((char *)String_val(vstr))      + Long_val(vstr_off);
-    size_t len = Long_val(vlen);
+    void *buf1 = ((char *)Caml_ba_data_val(vba)) + Unsigned_long_val(vba_off),
+         *buf2 = ((char *)String_val(vstr))      + Unsigned_long_val(vstr_off);
+    size_t len = Unsigned_long_val(vlen);
 
     int result = memcmp(buf1, buf2, len);
     return Val_int(result);
