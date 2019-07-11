@@ -2,7 +2,7 @@
  (name        bigstringaf_freestanding)
  (public_name bigstringaf.freestanding)
  (optional)
- (libraries   bigarray ocaml-freestanding)
+ (libraries   bigarray-compat ocaml-freestanding)
  (c_names     bigstringaf_stubs)
  (c_flags     (:include cflags.sexp)))
 
