@@ -71,9 +71,9 @@ val get_int16_le : t -> int -> int
     interpreted as an unsigned integer. *)
 
 val get_int16_sign_extended_le : t -> int -> int
-(** [get_int16_le t i] returns the two bytes in [t] starting at offset [i],
-    interpreted as a signed integer and performing sign extension to the native
-    word size before returning the result. *)
+(** [get_int16_sign_extended_le t i] returns the two bytes in [t] starting at
+    offset [i], interpreted as a signed integer and performing sign extension
+    to the native word size before returning the result. *)
 
 val set_int16_le : t -> int -> int -> unit
 (** [set_int16_le t i v] sets the two bytes in [t] starting at offset [i] to
@@ -87,7 +87,7 @@ val set_int32_le : t -> int -> int32 -> unit
     the value [v]. *)
 
 val get_int64_le : t -> int -> int64
-(** [get_int16_le t i] returns the eight bytes in [t] starting at offset [i]. *)
+(** [get_int64_le t i] returns the eight bytes in [t] starting at offset [i]. *)
 
 val set_int64_le : t -> int -> int64 -> unit
 (** [set_int64_le t i v] sets the eight bytes in [t] starting at offset [i] to
@@ -106,30 +106,29 @@ val set_int64_le : t -> int -> int64 -> unit
     dealing with raw frames, for example, in a userland networking stack. *)
 
 val get_int16_be : t -> int -> int
-(** [get_int16_le t i] returns the two bytes in [t] starting at offset [i],
+(** [get_int16_be t i] returns the two bytes in [t] starting at offset [i],
     interpreted as an unsigned integer. *)
 
 val get_int16_sign_extended_be : t -> int -> int
-(** [get_int16_le t i] returns the two bytes in [t] starting at offset [i],
-    interpreted as a signed integer and performing sign extension to the native
-    word size before returning the result. *)
+(** [get_int16_sign_extended_be t i] returns the two bytes in [t] starting at
+    offset [i], interpreted as a signed integer and performing sign extension
+    to the native word size before returning the result. *)
 
 val set_int16_be : t -> int -> int -> unit
-(** [set_int16_be t i v] sets the eight bytes in [t] starting at offset [off] to
+(** [set_int16_be t i v] sets the two bytes in [t] starting at offset [off] to
     the value [v]. *)
 
 val get_int32_be : t -> int -> int32
-(** [get_int64_be t i] returns the four bytes in [t] starting at offset [i]. *)
+(** [get_int32_be t i] returns the four bytes in [t] starting at offset [i]. *)
 
 val set_int32_be : t -> int -> int32 -> unit
-(** [set_int32_be t i v] sets the eight bytes in [t] starting at offset [i] to
+(** [set_int32_be t i v] sets the four bytes in [t] starting at offset [i] to
     the value [v]. *)
 
 val get_int64_be : t -> int -> int64
 (** [get_int64_be t i] returns the eight bytes in [t] starting at offset [i]. *)
 
 val set_int64_be : t -> int -> int64 -> unit
-
 (** [set_int64_be t i v] sets the eight bytes in [t] starting at offset [i] to
     the value [v]. *)
 
@@ -145,7 +144,7 @@ val set_int64_be : t -> int -> int64 -> unit
       ]}
 
     And in fact, that's how they're implemented. Except that bounds checking
-    performed before performing the blit. *)
+    is performed before performing the blit. *)
 
 val blit             : t       -> src_off:int -> t -> dst_off:int -> len:int -> unit
 val blit_from_string : string  -> src_off:int -> t -> dst_off:int -> len:int -> unit
@@ -155,7 +154,7 @@ val blit_to_bytes : t -> src_off:int -> Bytes.t -> dst_off:int -> len:int -> uni
 
 (** {3 [memcmp]}
 
-    Fast comparisions based on [memcmp]. Simliar to the blits, these are
+    Fast comparisons based on [memcmp]. Similar to the blits, these are
     implemented as C calls after performing bounds checks.
 
       {[
@@ -259,7 +258,7 @@ val unsafe_blit_to_bytes : t -> src_off:int -> Bytes.t -> dst_off:int -> len:int
 
 (** {3 [memcmp]}
 
-    Fast comparisions based on [memcmp]. Simliar to the blits, these are not
+    Fast comparisons based on [memcmp]. Similar to the blits, these are not
     memory safe and are implemented by the same C call:
 
       {[
