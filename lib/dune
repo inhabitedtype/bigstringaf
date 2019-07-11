@@ -1,7 +1,7 @@
 (library
  (name        bigstringaf)
  (public_name bigstringaf)
- (libraries   bigarray)
+ (libraries   bigarray-compat)
  (flags       (:standard -safe-string))
 
  (c_names     bigstringaf_stubs)
