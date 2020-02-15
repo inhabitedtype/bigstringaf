@@ -23,6 +23,7 @@ depopts: [
 conflicts: [
   "mirage-xen-posix" {< "3.1.0"}
   "ocaml-freestanding" {< "0.4.1"}
+  "js_of_ocaml" {< "3.5.0"}
 ]
 synopsis: "Bigstring intrinsics and fast blits based on memcpy/memmove"
 description: """
