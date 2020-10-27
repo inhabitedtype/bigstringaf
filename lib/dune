@@ -4,8 +4,10 @@
  (libraries   bigarray-compat)
  (flags       (:standard -safe-string))
 
- (c_names     bigstringaf_stubs)
- (c_flags     (:standard -Wall -Wextra -Wpedantic))
+ (foreign_stubs
+  (language c)
+  (names     bigstringaf_stubs)
+  (flags     (:standard -Wall -Wextra -Wpedantic)))
 
  (js_of_ocaml (javascript_files runtime.js))
 )

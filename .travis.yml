@@ -8,6 +8,9 @@ env:
   matrix:
   - PACKAGE="bigstringaf" DISTRO="ubuntu-16.04" OCAML_VERSION="4.03"
   - PACKAGE="bigstringaf" DISTRO="ubuntu-16.04" OCAML_VERSION="4.04"
-  - PACKAGE="bigstringaf" DISTRO="ubuntu-16.04" OCAML_VERSION="4.05" DEPOPTS="mirage-xen-posix"
-  - PACKAGE="bigstringaf" DISTRO="ubuntu-16.04" OCAML_VERSION="4.06" DEPOPTS="ocaml-freestanding"
-  - PACKAGE="bigstringaf" DISTRO="ubuntu-16.04" OCAML_VERSION="4.07" DEPOPTS="ocaml-freestanding"
+  - PACKAGE="bigstringaf" DISTRO="ubuntu-16.04" OCAML_VERSION="4.05"
+  - PACKAGE="bigstringaf" DISTRO="ubuntu-16.04" OCAML_VERSION="4.06"
+  - PACKAGE="bigstringaf" DISTRO="ubuntu-16.04" OCAML_VERSION="4.07"
+  - PACKAGE="bigstringaf" DISTRO="ubuntu-16.04" OCAML_VERSION="4.08"
+  - PACKAGE="bigstringaf" DISTRO="ubuntu-16.04" OCAML_VERSION="4.09" DEPOPTS="ocaml-freestanding"
+  - PACKAGE="bigstringaf" DISTRO="ubuntu-16.04" OCAML_VERSION="4.10" DEPOPTS="ocaml-freestanding"
