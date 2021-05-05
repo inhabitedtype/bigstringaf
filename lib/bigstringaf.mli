@@ -164,6 +164,12 @@ val blit_to_bytes : t -> src_off:int -> Bytes.t -> dst_off:int -> len:int -> uni
 val memcmp        : t -> int -> t      -> int -> int -> int
 val memcmp_string : t -> int -> string -> int -> int -> int
 
+(** {4 [memchr]}
+
+    Search for a byte in a bigstring using [memcmp]. Similar to [unsafe_memchr]
+    but this performs bounds checks.
+    *)
+val memchr : t -> int -> char -> int -> int
 
 (** {2 Memory-unsafe Operations}
 
@@ -267,3 +273,9 @@ val unsafe_blit_to_bytes : t -> src_off:int -> Bytes.t -> dst_off:int -> len:int
 
 val unsafe_memcmp        : t -> int -> t      -> int -> int -> int
 val unsafe_memcmp_string : t -> int -> string -> int -> int -> int
+
+(** {4 [memchr]}
+
+    Search for a byte in a bigstring using [memcmp].
+  *)
+val unsafe_memchr : t -> int -> char -> int -> int
