@@ -166,7 +166,7 @@ val memcmp_string : t -> int -> string -> int -> int -> int
 
 (** {4 [memchr]}
 
-    Search for a byte in a bigstring using [memcmp]. Similar to [unsafe_memchr]
+    Search for a byte in a bigstring using [memchr]. Similar to [unsafe_memchr]
     but this performs bounds checks.
     *)
 val memchr : t -> int -> char -> int -> int
@@ -276,6 +276,6 @@ val unsafe_memcmp_string : t -> int -> string -> int -> int -> int
 
 (** {4 [memchr]}
 
-    Search for a byte in a bigstring using [memcmp].
+    Search for a byte in a bigstring using [memchr].
   *)
 val unsafe_memchr : t -> int -> char -> int -> int
