@@ -12,6 +12,7 @@ build: [
 ]
 depends: [
   "dune" {>= "2.6.0"}
+  "dune-configurator" {>= "2.0.0"}
   "alcotest" {with-test}
   "ocaml" {>= "4.08.0"}
   "conf-pkg-config" {build}
