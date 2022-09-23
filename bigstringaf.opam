@@ -7,12 +7,21 @@ bug-reports: "https://github.com/inhabitedtype/bigstringaf/issues"
 dev-repo: "git+https://github.com/inhabitedtype/bigstringaf.git"
 build: [
   ["dune" "subst"] {dev}
-  ["dune" "build" "-p" name "-j" jobs]
-  ["dune" "runtest" "-p" name] {with-test}
+  [
+    "dune"
+    "build"
+    "-p"
+    name
+    "-j"
+    jobs
+    "@install"
+    "@runtest" {with-test}
+    "@doc" {with-doc}
+  ]
 ]
 depends: [
-  "dune" {>= "2.6.0"}
-  "dune-configurator" {>= "2.0.0"}
+  "dune" {>= "3.0"}
+  "dune-configurator" {>= "3.0"}
   "alcotest" {with-test}
   "ocaml" {>= "4.08.0"}
   "conf-pkg-config" {build}
