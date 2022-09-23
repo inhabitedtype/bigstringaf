@@ -1,6 +1,6 @@
 let of_string () =
   let open Bigstringaf in
-  let exn = Invalid_argument "Bigstringaf.of_string invalid range: { buffer_len: 3, off: 4611686018427387903, len: 2 }" in
+  let exn = Invalid_argument (Printf.sprintf "Bigstringaf.of_string invalid range: { buffer_len: 3, off: %d, len: 2 }" max_int) in
   Alcotest.check_raises "safe overflow" exn (fun () -> ignore (of_string ~off:max_int ~len:2 "abc"))
 ;;
 
@@ -41,8 +41,8 @@ let getters m () =
   Alcotest.(check int "get_int16_be" 0xbeef (get_int16_be buffer 2));
   Alcotest.(check int "get_int16_le" 0xadde (get_int16_le buffer 0));
   Alcotest.(check int "get_int16_le" 0xefbe (get_int16_le buffer 2));
-  Alcotest.(check int "get_int16_sign_extended_be" 0x7fffffffffffdead (get_int16_sign_extended_be buffer 0));
-  Alcotest.(check int "get_int16_sign_extended_le" 0x7fffffffffffadde (get_int16_sign_extended_le buffer 0));
+  Alcotest.(check int "get_int16_sign_extended_be" (Int64.to_int 0x7fffffffffffdeadL) (get_int16_sign_extended_be buffer 0));
+  Alcotest.(check int "get_int16_sign_extended_le" (Int64.to_int 0x7fffffffffffaddeL) (get_int16_sign_extended_le buffer 0));
   Alcotest.(check int "get_int16_sign_extended_le" 0x0df0 (get_int16_sign_extended_le buffer 6));
 
   Alcotest.(check int32 "get_int32_be" 0xdeadbeefl (get_int32_be buffer 0));
