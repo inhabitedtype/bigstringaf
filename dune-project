@@ -1,3 +1,3 @@
-(lang dune 2.6)
+(lang dune 3.0)
 (name bigstringaf)
-(formatting disabled)
+(formatting (enabled_for dune))
