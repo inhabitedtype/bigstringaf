@@ -24,14 +24,10 @@ depends: [
   "dune-configurator" {>= "3.0"}
   "alcotest" {with-test}
   "ocaml" {>= "4.08.0"}
-  "conf-pkg-config" {build}
-]
-depopts: [
-  "ocaml-freestanding"
 ]
 conflicts: [
   "mirage-xen" {< "6.0.0"}
-  "ocaml-freestanding" {< "0.4.1"}
+  "ocaml-freestanding"
   "js_of_ocaml" {< "3.5.0"}
 ]
 synopsis: "Bigstring intrinsics and fast blits based on memcpy/memmove"
