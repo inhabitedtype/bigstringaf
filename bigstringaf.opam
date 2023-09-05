@@ -20,8 +20,8 @@ build: [
   ]
 ]
 depends: [
-  "dune" {>= "3.0"}
-  "dune-configurator" {>= "3.0"}
+  "dune" {>= "3.17"}
+  "dune-configurator" {>= "3.17"}
   "alcotest" {with-test}
   "ocaml" {>= "4.08.0"}
 ]
