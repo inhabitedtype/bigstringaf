@@ -35,31 +35,34 @@
 #include <caml/mlvalues.h>
 #include <caml/bigarray.h>
 
-void
+CAMLprim value
 bigstringaf_blit_to_bytes(value vsrc, value vsrc_off, value vdst, value vdst_off, value vlen)
 {
     void *src = ((char *)Caml_ba_data_val(vsrc)) + Unsigned_long_val(vsrc_off),
          *dst = ((char *)String_val(vdst))       + Unsigned_long_val(vdst_off);
     size_t len = Unsigned_long_val(vlen);
     memcpy(dst, src, len);
+    return Val_unit;
 }
 
-void
+CAMLprim value
 bigstringaf_blit_to_bigstring(value vsrc, value vsrc_off, value vdst, value vdst_off, value vlen)
 {
     void *src = ((char *)Caml_ba_data_val(vsrc)) + Unsigned_long_val(vsrc_off),
          *dst = ((char *)Caml_ba_data_val(vdst)) + Unsigned_long_val(vdst_off);
     size_t len = Unsigned_long_val(vlen);
     memmove(dst, src, len);
+    return Val_unit;
 }
 
-void
+CAMLprim value
 bigstringaf_blit_from_bytes(value vsrc, value vsrc_off, value vdst, value vdst_off, value vlen)
 {
     void *src = ((char *)String_val(vsrc))       + Unsigned_long_val(vsrc_off),
          *dst = ((char *)Caml_ba_data_val(vdst)) + Unsigned_long_val(vdst_off);
     size_t len = Unsigned_long_val(vlen);
     memcpy(dst, src, len);
+    return Val_unit;
 }
 
 CAMLprim value
