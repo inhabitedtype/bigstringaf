@@ -44,3 +44,7 @@ make test
 ## License
 
 BSD3, see LICENSE file for its text.
+
+## Examples
+
+See examples/README.md for a simple usage example.
