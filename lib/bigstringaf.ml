@@ -237,43 +237,64 @@ module Swap = struct
     ((caml_bigstring_get_16 x off) lsl (Sys.int_size - 16)) asr (Sys.int_size - 16)
 end
 
-let set_int16_le, set_int16_be =
-  if Sys.big_endian
-  then Swap.caml_bigstring_set_16, caml_bigstring_set_16
-  else caml_bigstring_set_16     , Swap.caml_bigstring_set_16
+let set_int16_le b i x =
+  if Sys.big_endian then Swap.caml_bigstring_set_16 b i x
+  else caml_bigstring_set_16 b i x
 
-let set_int32_le, set_int32_be =
-  if Sys.big_endian
-  then Swap.caml_bigstring_set_32, caml_bigstring_set_32
-  else caml_bigstring_set_32     , Swap.caml_bigstring_set_32
+let set_int16_be b i x =
+  if not Sys.big_endian then Swap.caml_bigstring_set_16 b i x
+  else caml_bigstring_set_16 b i x
 
-let set_int64_le, set_int64_be =
-  if Sys.big_endian
-  then Swap.caml_bigstring_set_64, caml_bigstring_set_64
-  else caml_bigstring_set_64     , Swap.caml_bigstring_set_64
+let set_int32_le b i x =
+  if Sys.big_endian then Swap.caml_bigstring_set_32 b i x
+  else caml_bigstring_set_32 b i x
 
-let get_int16_le, get_int16_be =
-  if Sys.big_endian
-  then Swap.caml_bigstring_get_16, caml_bigstring_get_16
-  else caml_bigstring_get_16     , Swap.caml_bigstring_get_16
+let set_int32_be b i x =
+  if not Sys.big_endian then Swap.caml_bigstring_set_32 b i x
+  else caml_bigstring_set_32 b i x
+
+let set_int64_le b i x =
+  if Sys.big_endian then Swap.caml_bigstring_set_64 b i x
+  else caml_bigstring_set_64 b i x
+
+let set_int64_be b i x =
+  if not Sys.big_endian then Swap.caml_bigstring_set_64 b i x
+  else caml_bigstring_set_64 b i x
+
+let get_int16_le b i =
+  if Sys.big_endian then Swap.caml_bigstring_get_16 b i
+  else caml_bigstring_get_16 b i
+
+let get_int16_be b i =
+  if not Sys.big_endian then Swap.caml_bigstring_get_16 b i
+  else caml_bigstring_get_16 b i
 
 let get_int16_sign_extended_noswap x off =
   ((caml_bigstring_get_16      x off) lsl (Sys.int_size - 16)) asr (Sys.int_size - 16)
 
-let get_int16_sign_extended_le, get_int16_sign_extended_be  =
-  if Sys.big_endian
-  then Swap.get_int16_sign_extended  , get_int16_sign_extended_noswap
-  else get_int16_sign_extended_noswap, Swap.get_int16_sign_extended
+let get_int16_sign_extended_le b i =
+  if Sys.big_endian then Swap.get_int16_sign_extended b i
+  else get_int16_sign_extended_noswap b i
 
-let get_int32_le, get_int32_be =
-  if Sys.big_endian
-  then Swap.caml_bigstring_get_32, caml_bigstring_get_32
-  else caml_bigstring_get_32     , Swap.caml_bigstring_get_32
+let get_int16_sign_extended_be b i =
+  if not Sys.big_endian then Swap.get_int16_sign_extended b i
+  else get_int16_sign_extended_noswap b i
 
-let get_int64_le, get_int64_be =
-  if Sys.big_endian
-  then Swap.caml_bigstring_get_64, caml_bigstring_get_64
-  else caml_bigstring_get_64     , Swap.caml_bigstring_get_64
+let get_int32_le b i =
+  if Sys.big_endian then Swap.caml_bigstring_get_32 b i
+  else caml_bigstring_get_32 b i
+
+let get_int32_be b i =
+  if not Sys.big_endian then Swap.caml_bigstring_get_32 b i
+  else caml_bigstring_get_32 b i
+
+let get_int64_le b i =
+  if Sys.big_endian then Swap.caml_bigstring_get_64 b i
+  else caml_bigstring_get_64 b i
+
+let get_int64_be b i =
+  if not Sys.big_endian then Swap.caml_bigstring_get_64 b i
+  else caml_bigstring_get_64 b i
 
 (* Unsafe operations *)
 
@@ -309,25 +330,37 @@ module USwap = struct
     bswap_int64 (caml_bigstring_unsafe_get_64 bs off)
 end
 
-let unsafe_set_int16_le, unsafe_set_int16_be =
-  if Sys.big_endian
-  then USwap.caml_bigstring_unsafe_set_16, caml_bigstring_unsafe_set_16
-  else caml_bigstring_unsafe_set_16      , USwap.caml_bigstring_unsafe_set_16
+let unsafe_set_int16_le b i x =
+  if Sys.big_endian then USwap.caml_bigstring_unsafe_set_16 b i x
+  else caml_bigstring_unsafe_set_16 b i x
 
-let unsafe_set_int32_le, unsafe_set_int32_be =
-  if Sys.big_endian
-  then USwap.caml_bigstring_unsafe_set_32, caml_bigstring_unsafe_set_32
-  else caml_bigstring_unsafe_set_32      , USwap.caml_bigstring_unsafe_set_32
+let unsafe_set_int16_be b i x =
+  if not Sys.big_endian then USwap.caml_bigstring_unsafe_set_16 b i x
+  else caml_bigstring_unsafe_set_16 b i x
 
-let unsafe_set_int64_le, unsafe_set_int64_be =
-  if Sys.big_endian
-  then USwap.caml_bigstring_unsafe_set_64, caml_bigstring_unsafe_set_64
-  else caml_bigstring_unsafe_set_64      , USwap.caml_bigstring_unsafe_set_64
+let unsafe_set_int32_le b i x =
+  if Sys.big_endian then USwap.caml_bigstring_unsafe_set_32 b i x
+  else caml_bigstring_unsafe_set_32 b i x
 
-let unsafe_get_int16_le, unsafe_get_int16_be =
-  if Sys.big_endian
-  then USwap.caml_bigstring_unsafe_get_16, caml_bigstring_unsafe_get_16
-  else caml_bigstring_unsafe_get_16      , USwap.caml_bigstring_unsafe_get_16
+let unsafe_set_int32_be b i x =
+  if not Sys.big_endian then USwap.caml_bigstring_unsafe_set_32 b i x
+  else caml_bigstring_unsafe_set_32 b i x
+
+let unsafe_set_int64_le b i x =
+  if Sys.big_endian then USwap.caml_bigstring_unsafe_set_64 b i x
+  else caml_bigstring_unsafe_set_64 b i x
+
+let unsafe_set_int64_be b i x =
+  if not Sys.big_endian then USwap.caml_bigstring_unsafe_set_64 b i x
+  else caml_bigstring_unsafe_set_64 b i x
+
+let unsafe_get_int16_le b i =
+  if Sys.big_endian then USwap.caml_bigstring_unsafe_get_16 b i
+  else caml_bigstring_unsafe_get_16 b i
+
+let unsafe_get_int16_be b i =
+  if not Sys.big_endian then USwap.caml_bigstring_unsafe_get_16 b i
+  else caml_bigstring_unsafe_get_16 b i
 
 let unsafe_get_int16_sign_extended_le x off =
   ((unsafe_get_int16_le x off) lsl (Sys.int_size - 16)) asr (Sys.int_size - 16)
@@ -335,12 +368,18 @@ let unsafe_get_int16_sign_extended_le x off =
 let unsafe_get_int16_sign_extended_be x off =
   ((unsafe_get_int16_be x off ) lsl (Sys.int_size - 16)) asr (Sys.int_size - 16)
 
-let unsafe_get_int32_le, unsafe_get_int32_be =
-  if Sys.big_endian
-  then USwap.caml_bigstring_unsafe_get_32, caml_bigstring_unsafe_get_32
-  else caml_bigstring_unsafe_get_32      , USwap.caml_bigstring_unsafe_get_32
+let unsafe_get_int32_le b i =
+  if Sys.big_endian then USwap.caml_bigstring_unsafe_get_32 b i
+  else caml_bigstring_unsafe_get_32 b i
 
-let unsafe_get_int64_le, unsafe_get_int64_be =
-  if Sys.big_endian
-  then USwap.caml_bigstring_unsafe_get_64, caml_bigstring_unsafe_get_64
-  else caml_bigstring_unsafe_get_64      , USwap.caml_bigstring_unsafe_get_64
+let unsafe_get_int32_be b i =
+  if not Sys.big_endian then USwap.caml_bigstring_unsafe_get_32 b i
+  else caml_bigstring_unsafe_get_32 b i
+
+let unsafe_get_int64_le b i =
+  if Sys.big_endian then USwap.caml_bigstring_unsafe_get_64 b i
+  else caml_bigstring_unsafe_get_64 b i
+
+let unsafe_get_int64_be b i =
+  if not Sys.big_endian then USwap.caml_bigstring_unsafe_get_64 b i
+  else caml_bigstring_unsafe_get_64 b i
